@@ -16,7 +16,8 @@ import PdfOptionsSheet from '../components/PdfOptionsSheet';
 import * as ImageManipulator from 'expo-image-manipulator';
 import CropRatioSheet from '../components/CropRatioSheet';
 import ImageAdjustmentsSheet, { ImageAdjustments } from '../components/ImageAdjustmentsSheet';
-import { applyImageAdjustments, hasAdjustments } from '../utils/imageAdjustments';
+import { hasAdjustments } from '../utils/imageAdjustments';
+import FilteredImage from '../components/FilteredImage';
 import { MotiView } from 'moti';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Edit'>;
@@ -50,28 +51,8 @@ export default function EditScreen({ route, navigation }: Props) {
   }, []);
 
   const applyAdjustments = useCallback(async (key: string, adjustments: ImageAdjustments) => {
-    try {
-      const item = items.find(i => i.key === key);
-      if (!item) return;
-
-      if (!hasAdjustments(adjustments)) {
-        // No adjustments to apply, just update state
-        setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
-        return;
-      }
-
-      const adjustedUri = await applyImageAdjustments(item.uri, adjustments);
-      
-      // Update the item with the new URI
-      setItems(prev => prev.map(i => 
-        i.key === key ? { ...i, uri: adjustedUri } : i
-      ));
-      
-      // Store the adjustments
-      setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
-    } catch (error) {
-      Alert.alert('Adjustment failed', 'Could not apply image adjustments.');
-    }
+    // Store the adjustments - the FilteredImage component will handle the visual application
+    setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
   }, [items]);
 
   const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<any>) => (
@@ -86,9 +67,10 @@ export default function EditScreen({ route, navigation }: Props) {
         style={{ opacity: isActive ? 0.7 : 1 }}
       >
         <View className="relative">
-          <Image 
+          <FilteredImage 
             source={{ uri: item.uri }} 
             style={{ width: 72, height: 72, borderRadius: 20, backgroundColor: '#F8FAFC' }} 
+            adjustments={imageAdjustments[item.key]}
           />
           <View className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-slate-600 items-center justify-center shadow-medium">
             <Ionicons name="reorder-two" size={14} color="#FFFFFF" />
