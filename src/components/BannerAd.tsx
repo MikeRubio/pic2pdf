@@ -23,7 +23,16 @@ export default function BannerAd({ adUnitId }: Props) {
   if (!AdComponent) return null;
 
   return (
-    <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: insets.bottom, backgroundColor: '#F9FAFB' }}>
+    <View style={{ 
+      position: 'absolute', 
+      left: 0, 
+      right: 0, 
+      bottom: 0, 
+      paddingBottom: insets.bottom, 
+      backgroundColor: '#FAFBFC',
+      borderTopWidth: 1,
+      borderTopColor: '#F1F5F9'
+    }}>
       <AdComponent bannerSize="smartBannerPortrait" adUnitID={adUnitId} servePersonalizedAds onDidFailToReceiveAdWithError={() => {}} />
     </View>
   );

@@ -81,7 +81,7 @@ export default function App() {
 
   const theme = {
     ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: '#F9FAFB', text: '#111827' },
+    colors: { ...DefaultTheme.colors, background: '#FAFBFC', text: '#0F172A' },
   };
 
   return (
@@ -100,10 +100,22 @@ export default function App() {
               component={HomeScreen}
               options={({ navigation }) => ({
                 title: 'Photo2PDF',
-                headerTitleStyle: { fontFamily: 'Inter_700Bold', color: '#111827' },
+                headerTitleStyle: { 
+                  fontFamily: 'Inter_700Bold', 
+                  color: '#0F172A',
+                  fontSize: 18
+                },
+                headerStyle: {
+                  backgroundColor: '#FAFBFC',
+                  shadowColor: 'transparent',
+                  elevation: 0,
+                },
                 headerRight: () => (
-                  <Pressable onPress={() => navigation.navigate('Settings')} style={{ paddingHorizontal: 8 }}>
-                    <Ionicons name="settings-outline" size={22} color="#111827" />
+                  <Pressable 
+                    onPress={() => navigation.navigate('Settings')} 
+                    className="w-10 h-10 rounded-xl bg-neutral-100 items-center justify-center"
+                  >
+                    <Ionicons name="settings-outline" size={20} color="#0F172A" />
                   </Pressable>
                 ),
               })}
@@ -111,22 +123,70 @@ export default function App() {
             <Stack.Screen
               name="Edit"
               component={EditScreen}
-              options={{ title: 'Arrange & Export', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+              options={{ 
+                title: 'Arrange & Export', 
+                headerTitleStyle: { 
+                  fontFamily: 'Inter_700Bold',
+                  color: '#0F172A',
+                  fontSize: 18
+                },
+                headerStyle: {
+                  backgroundColor: '#FAFBFC',
+                  shadowColor: 'transparent',
+                  elevation: 0,
+                }
+              }}
             />
             <Stack.Screen
               name="ExportSuccess"
               component={ExportSuccessScreen}
-              options={{ title: 'Export Complete', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+              options={{ 
+                title: 'Export Complete', 
+                headerTitleStyle: { 
+                  fontFamily: 'Inter_700Bold',
+                  color: '#0F172A',
+                  fontSize: 18
+                },
+                headerStyle: {
+                  backgroundColor: '#FAFBFC',
+                  shadowColor: 'transparent',
+                  elevation: 0,
+                }
+              }}
             />
             <Stack.Screen
               name="Settings"
               component={SettingsScreen}
-              options={{ title: 'Settings', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+              options={{ 
+                title: 'Settings', 
+                headerTitleStyle: { 
+                  fontFamily: 'Inter_700Bold',
+                  color: '#0F172A',
+                  fontSize: 18
+                },
+                headerStyle: {
+                  backgroundColor: '#FAFBFC',
+                  shadowColor: 'transparent',
+                  elevation: 0,
+                }
+              }}
             />
             <Stack.Screen
               name="CropEditor"
               component={require('./src/screens/CropEditorScreen').default}
-              options={{ title: 'Crop', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+              options={{ 
+                title: 'Crop Image', 
+                headerTitleStyle: { 
+                  fontFamily: 'Inter_700Bold',
+                  color: '#0F172A',
+                  fontSize: 18
+                },
+                headerStyle: {
+                  backgroundColor: '#FAFBFC',
+                  shadowColor: 'transparent',
+                  elevation: 0,
+                }
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

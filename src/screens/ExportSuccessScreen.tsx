@@ -81,51 +81,99 @@ export default function ExportSuccessScreen({ route, navigation }: Props) {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="px-6 pt-8 pb-4 items-center">
+      <View className="px-6 pt-12 pb-8 items-center">
         <Animated.View entering={FadeInDown.duration(250)}>
-          <Text className="text-2xl text-text text-center" style={{ fontFamily: 'Inter_700Bold' }}>Export Successful</Text>
-          <Text className="text-gray-600 mt-2 text-center" style={{ fontFamily: 'Inter_400Regular' }}>
-            Your PDF is saved locally and ready to share.
+          <View className="w-20 h-20 rounded-full bg-accent-100 items-center justify-center mb-6">
+            <Ionicons name="checkmark-circle" size={40} color="#10B981" />
+          </View>
+          <Text className="text-3xl text-text-primary text-center" style={{ fontFamily: 'Inter_700Bold' }}>
+            Export Complete!
+          </Text>
+          <Text className="text-text-secondary mt-3 text-center text-lg leading-6" style={{ fontFamily: 'Inter_400Regular' }}>
+            Your PDF has been created and is ready to share or save.
           </Text>
         </Animated.View>
       </View>
 
-      <View className="px-6 mt-2">
-        <View className="bg-white rounded-2xl p-4 shadow-soft">
-          <Text className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={2}>
+      <View className="px-6 mb-6">
+        <View className="bg-surface rounded-3xl p-5 shadow-medium border border-border-light">
+          <Text className="text-text-tertiary text-sm mb-1" style={{ fontFamily: 'Inter_500Medium' }}>File Location</Text>
+          <Text className="text-text-secondary" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={2}>
             {currentFile.replace(FileSystem.documentDirectory || '', '')}
           </Text>
+          {isHd && (
+            <View className="flex-row items-center mt-3">
+              <View className="bg-accent-100 px-3 py-1.5 rounded-lg">
+                <Text className="text-accent-700" style={{ fontFamily: 'Inter_700Bold' }}>HD Quality</Text>
+              </View>
+            </View>
+          )}
         </View>
       </View>
 
-      <View className="px-6 mt-6">
-        <View className="flex-row">
-          <PrimaryButton title="Share" icon="share-social-outline" onPress={share} style={{ flex: 1, marginRight: 8 }} />
-          <PrimaryButton title="Open" icon="open-outline" onPress={open} variant="dark" style={{ flex: 1, marginLeft: 8 }} />
+      <View className="px-6 mb-4">
+        <View className="flex-row space-x-3">
+          <PrimaryButton 
+            title="Share PDF" 
+            icon="share-social-outline" 
+            onPress={share} 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
+          <PrimaryButton 
+            title="Open" 
+            icon="open-outline" 
+            onPress={open} 
+            variant="secondary" 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
         </View>
       </View>
 
       {Platform.OS === 'android' && (
-        <View className="px-6 mt-3">
+        <View className="px-6 mb-4">
           {busy ? (
-            <View className="bg-text rounded-2xl p-4 items-center"><ActivityIndicator color="#fff" /></View>
+            <View className="bg-neutral-800 rounded-2xl py-4 items-center shadow-medium">
+              <ActivityIndicator color="#fff" size="small" />
+              <Text className="text-white mt-2" style={{ fontFamily: 'Inter_500Medium' }}>Saving...</Text>
+            </View>
           ) : (
-            <PrimaryButton title="Save to Downloads" icon="download-outline" onPress={saveToDownloads} variant="dark" />
+            <PrimaryButton 
+              title="Save to Downloads" 
+              icon="download-outline" 
+              onPress={saveToDownloads} 
+              variant="dark" 
+              size="lg"
+            />
           )}
         </View>
       )}
 
-      <View className="px-6 mt-3">
+      <View className="px-6 mb-8">
         {isHd ? (
-          <View className="bg-emerald-50 rounded-2xl p-4 items-center">
-            <Text className="text-accent" style={{ fontFamily: 'Inter_700Bold' }}>HD Enabled</Text>
+          <View className="bg-accent-50 rounded-2xl p-4 items-center border border-accent-200">
+            <View className="flex-row items-center">
+              <Ionicons name="sparkles" size={18} color="#10B981" />
+              <Text className="text-accent-700 ml-2" style={{ fontFamily: 'Inter_700Bold' }}>HD Quality Enabled</Text>
+            </View>
           </View>
         ) : (
-          <Pressable disabled={busy} onPress={upgradeToHD} className="bg-accent rounded-2xl p-4 items-center">
+          <Pressable 
+            disabled={busy} 
+            onPress={upgradeToHD} 
+            className="bg-accent-600 rounded-2xl p-4 items-center shadow-medium border border-accent-600"
+          >
             {busy ? (
-              <ActivityIndicator color="#fff" />
+              <View className="flex-row items-center">
+                <ActivityIndicator color="#fff" size="small" />
+                <Text className="text-white ml-2" style={{ fontFamily: 'Inter_700Bold' }}>Loading...</Text>
+              </View>
             ) : (
-              <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Upgrade to HD (Ad)</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="sparkles-outline" size={18} color="#FFFFFF" />
+                <Text className="text-white ml-2" style={{ fontFamily: 'Inter_700Bold' }}>Upgrade to HD Quality</Text>
+              </View>
             )}
           </Pressable>
         )}

@@ -20,19 +20,24 @@ const ratios: Array<{ key: RatioKey; ratio: number }> = [
 export default function CropRatioSheet({ visible, onClose, onSelect }: CropRatioSheetProps) {
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/40">
-        <View className="bg-white rounded-t-2xl p-4">
-          <Text className="text-text text-lg mb-3" style={{ fontFamily: 'Inter_700Bold' }}>Choose Crop Ratio</Text>
+      <View className="flex-1 justify-end bg-black/50">
+        <View className="bg-surface rounded-t-3xl p-6 shadow-large">
+          <View className="w-12 h-1 bg-neutral-300 rounded-full self-center mb-6" />
+          <Text className="text-text-primary text-xl mb-6" style={{ fontFamily: 'Inter_700Bold' }}>Choose Crop Ratio</Text>
           <View className="flex-row flex-wrap">
             {ratios.map((r) => (
-              <Pressable key={r.key} onPress={() => onSelect(r.key, r.ratio)} className="px-3 py-2 rounded-xl bg-gray-100 mr-2 mb-2">
-                <Text className="text-text" style={{ fontFamily: 'Inter_500Medium' }}>{r.key}</Text>
+              <Pressable 
+                key={r.key} 
+                onPress={() => onSelect(r.key, r.ratio)} 
+                className="px-4 py-3 rounded-2xl bg-surface border border-border mr-3 mb-3"
+              >
+                <Text className="text-text-primary" style={{ fontFamily: 'Inter_500Medium' }}>{r.key}</Text>
               </Pressable>
             ))}
           </View>
-          <View className="flex-row mt-3">
-            <Pressable onPress={onClose} className="flex-1 bg-text rounded-2xl p-3 items-center">
-              <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Cancel</Text>
+          <View className="flex-row mt-6">
+            <Pressable onPress={onClose} className="flex-1 bg-neutral-800 rounded-2xl py-4 items-center shadow-medium">
+              <Text className="text-white text-lg" style={{ fontFamily: 'Inter_700Bold' }}>Cancel</Text>
             </Pressable>
           </View>
         </View>

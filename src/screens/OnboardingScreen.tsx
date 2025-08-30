@@ -44,28 +44,42 @@ export default function OnboardingScreen({ onDone }: Props) {
           setIndex(i);
         }}
         renderItem={({ item }) => (
-          <View style={{ width }} className="px-8 pt-20 items-center">
+          <View style={{ width }} className="px-8 pt-24 items-center">
             <MotiView
               from={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: 'timing', duration: 350 }}
-              style={{ width: 96, height: 96, borderRadius: 16, backgroundColor: '#2563EB', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4 }}
+              className="w-24 h-24 rounded-3xl bg-primary-600 items-center justify-center shadow-large"
             >
-              <Ionicons name={item.icon} size={48} color="#fff" />
+              <Ionicons name={item.icon} size={40} color="#fff" />
             </MotiView>
-            <Text className="text-2xl text-text mt-8" style={{ fontFamily: 'Inter_700Bold' }}>{item.title}</Text>
-            <Text className="text-gray-600 mt-2 text-center" style={{ fontFamily: 'Inter_400Regular' }}>{item.subtitle}</Text>
+            <Text className="text-3xl text-text-primary mt-8 text-center" style={{ fontFamily: 'Inter_700Bold' }}>
+              {item.title}
+            </Text>
+            <Text className="text-text-secondary mt-3 text-center text-lg leading-6 px-4" style={{ fontFamily: 'Inter_400Regular' }}>
+              {item.subtitle}
+            </Text>
           </View>
         )}
       />
 
-      <View className="px-8 pb-12">
-        <View className="flex-row justify-center mb-4">
+      <View className="px-8 pb-16">
+        <View className="flex-row justify-center mb-8">
           {slides.map((_, i) => (
-            <View key={i} className={`h-2 rounded-full mx-1 ${i === index ? 'bg-primary w-6' : 'bg-gray-300 w-2'}`} />
+            <View 
+              key={i} 
+              className={`h-2 rounded-full mx-1 transition-all duration-300 ${
+                i === index ? 'bg-primary-600 w-8' : 'bg-neutral-300 w-2'
+              }`} 
+            />
           ))}
         </View>
-        <PrimaryButton title={index === slides.length - 1 ? 'Get Started' : 'Next'} onPress={next} />
+        <PrimaryButton 
+          title={index === slides.length - 1 ? 'Get Started' : 'Next'} 
+          onPress={next} 
+          size="lg"
+          icon={index === slides.length - 1 ? 'checkmark' : 'arrow-forward'}
+        />
       </View>
     </View>
   );

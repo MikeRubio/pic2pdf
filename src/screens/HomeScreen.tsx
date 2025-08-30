@@ -105,24 +105,40 @@ export default function HomeScreen({ navigation }: Props) {
   }, []);
 
   const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<Img>) => (
-    <Pressable
-      onLongPress={drag}
-      className="bg-white rounded-2xl p-3 mb-3 flex-row items-center shadow-soft"
+    <MotiView 
+      from={{ opacity: 0, translateY: 8 }} 
+      animate={{ opacity: 1, translateY: 0 }}
       style={{ opacity: isActive ? 0.8 : 1 }}
     >
-      <Image source={{ uri: item.uri }} style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: '#eee' }} />
-      <View className="ml-3 flex-1">
-        <Text className="text-text" style={{ fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
+      <Pressable
+      onLongPress={drag}
+        className="bg-surface rounded-3xl p-4 mb-3 flex-row items-center shadow-medium border border-border-light"
+      >
+        <View className="relative">
+          <Image 
+            source={{ uri: item.uri }} 
+            style={{ width: 64, height: 64, borderRadius: 16, backgroundColor: '#F5F5F5' }} 
+          />
+          <View className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary-600 items-center justify-center">
+            <Ionicons name="image" size={12} color="#FFFFFF" />
+          </View>
+        </View>
+        <View className="ml-4 flex-1">
+          <Text className="text-text-primary text-base" style={{ fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
           {item.fileName || item.uri.split('/').pop()}
         </Text>
-        <Text className="text-gray-500" style={{ fontFamily: 'Inter_400Regular', fontSize: 12 }}>
+          <Text className="text-text-tertiary mt-1" style={{ fontFamily: 'Inter_400Regular', fontSize: 13 }}>
           {item.width}×{item.height}
         </Text>
       </View>
-      <Pressable onPress={() => removeAt(item.key)} className="px-3 py-2 rounded-xl bg-red-50">
-        <Text className="text-red-600" style={{ fontFamily: 'Inter_500Medium' }}>Delete</Text>
+        <Pressable 
+          onPress={() => removeAt(item.key)} 
+          className="w-10 h-10 rounded-xl bg-error-50 items-center justify-center"
+        >
+          <Ionicons name="trash-outline" size={18} color="#DC2626" />
       </Pressable>
-    </Pressable>
+      </Pressable>
+    </MotiView>
   ), [removeAt]);
 
   const goEdit = useCallback(() => {
@@ -135,53 +151,91 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="px-5 pt-6 pb-3">
+      <View className="px-6 pt-8 pb-6">
         <Animated.View entering={FadeInDown.duration(250)}>
-          <Text className="text-2xl text-text mb-2" style={{ fontFamily: 'Inter_700Bold' }}>Photo2PDF</Text>
-          <Text className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }}>
+          <Text className="text-3xl text-text-primary mb-3" style={{ fontFamily: 'Inter_700Bold' }}>
+            Transform Photos to PDF
+          </Text>
+          <Text className="text-text-secondary text-lg leading-6" style={{ fontFamily: 'Inter_400Regular' }}>
             Select photos, arrange them, and export to a single PDF.
           </Text>
         </Animated.View>
-        <View className="flex-row mt-5">
-          <PrimaryButton title="Pick Photos" icon="images-outline" onPress={pickImages} style={{ flex: 1, marginRight: 8 }} />
-          <PrimaryButton title="Camera" icon="camera-outline" onPress={takePhoto} variant="accent" style={{ flex: 1, marginLeft: 8 }} />
+        <View className="flex-row mt-8 space-x-3">
+          <PrimaryButton 
+            title="Pick Photos" 
+            icon="images-outline" 
+            onPress={pickImages} 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
+          <PrimaryButton 
+            title="Camera" 
+            icon="camera-outline" 
+            onPress={takePhoto} 
+            variant="accent" 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
         </View>
 
         {recents.length > 0 && (
           <MotiView from={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
-            <Pressable onPress={() => navigation.navigate('Settings')} className="mt-5 bg-white rounded-2xl p-4 shadow-soft">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-text" style={{ fontFamily: 'Inter_700Bold' }}>Recent PDFs</Text>
-                <Text className="text-primary" style={{ fontFamily: 'Inter_500Medium' }}>View All</Text>
+            <Pressable onPress={() => navigation.navigate('Settings')} className="mt-8 bg-surface rounded-3xl p-5 shadow-medium border border-border-light">
+              <View className="flex-row items-center justify-between mb-3">
+                <Text className="text-text-primary text-lg" style={{ fontFamily: 'Inter_700Bold' }}>Recent PDFs</Text>
+                <View className="flex-row items-center">
+                  <Text className="text-primary-600 mr-1" style={{ fontFamily: 'Inter_500Medium' }}>View All</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#2563EB" />
+                </View>
               </View>
-              {recents.map((r) => (
-                <Text key={r.fileUri} className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={1}>
-                  • {r.name}
-                </Text>
+              {recents.map((r, index) => (
+                <View key={r.fileUri} className={`flex-row items-center ${index < recents.length - 1 ? 'mb-2' : ''}`}>
+                  <View className="w-2 h-2 rounded-full bg-primary-200 mr-3" />
+                  <Text className="text-text-secondary flex-1" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={1}>
+                    {r.name}
+                  </Text>
+                  {r.hd && (
+                    <View className="bg-accent-100 px-2 py-1 rounded-lg">
+                      <Text className="text-accent-700 text-xs" style={{ fontFamily: 'Inter_700Bold' }}>HD</Text>
+                    </View>
+                  )}
+                </View>
               ))}
             </Pressable>
           </MotiView>
         )}
       </View>
 
-      <View className="flex-1 px-5">
+      <View className="flex-1 px-6">
         <DraggableFlatList
           data={images}
           keyExtractor={(item) => item.key}
           onDragEnd={({ data }) => setImages(data)}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 140 }}
           ListEmptyComponent={
-            <View className="items-center mt-16">
-              <Ionicons name="images-outline" size={40} color="#9CA3AF" />
-              <Text className="text-gray-500 mt-2" style={{ fontFamily: 'Inter_400Regular' }}>No photos selected yet.</Text>
+            <View className="items-center mt-20">
+              <View className="w-20 h-20 rounded-3xl bg-neutral-100 items-center justify-center mb-4">
+                <Ionicons name="images-outline" size={32} color="#A3A3A3" />
+              </View>
+              <Text className="text-text-tertiary text-lg" style={{ fontFamily: 'Inter_500Medium' }}>No photos selected yet</Text>
+              <Text className="text-text-tertiary mt-1 text-center px-8" style={{ fontFamily: 'Inter_400Regular' }}>
+                Tap "Pick Photos" or "Camera" to get started
+              </Text>
             </View>
           }
         />
       </View>
 
-      <View className="px-5 pb-28">
-        <PrimaryButton title="Continue" icon="arrow-forward" onPress={goEdit} variant="dark" disabled={!images.length} />
+      <View className="px-6 pb-32">
+        <PrimaryButton 
+          title="Continue" 
+          icon="arrow-forward" 
+          onPress={goEdit} 
+          variant="dark" 
+          size="lg"
+          disabled={!images.length} 
+        />
       </View>
 
       <BannerAd adUnitId={ad.bannerUnitId} />

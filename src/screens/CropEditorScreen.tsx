@@ -100,24 +100,56 @@ export default function CropEditorScreen({ route, navigation }: Props) {
 
   return (
     <View className="flex-1 bg-background">
-      <View style={{ padding, paddingTop: 24 }}>
-        <Text className="text-lg text-text mb-2" style={{ fontFamily: 'Inter_700Bold' }}>Adjust crop</Text>
-        <View style={{ width: cropW, height: cropH, alignSelf: 'center', backgroundColor: 'black', borderRadius: 16, overflow: 'hidden' }}>
+      <View style={{ padding: padding + 2, paddingTop: 32 }}>
+        <Text className="text-2xl text-text-primary mb-3" style={{ fontFamily: 'Inter_700Bold' }}>Adjust Crop Area</Text>
+        <Text className="text-text-secondary mb-6" style={{ fontFamily: 'Inter_400Regular' }}>
+          Pinch to zoom, drag to reposition
+        </Text>
+        <View 
+          style={{ 
+            width: cropW, 
+            height: cropH, 
+            alignSelf: 'center', 
+            backgroundColor: '#000', 
+            borderRadius: 24, 
+            overflow: 'hidden',
+            shadowColor: '#000',
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 8
+          }}
+        >
           <GestureDetector gesture={composed}>
             <Animated.Image source={{ uri }} resizeMode="cover" style={[{ alignSelf: 'center' }, imgStyle]} />
           </GestureDetector>
           {/* Overlay grid */}
-          <View pointerEvents="none" style={{ position: 'absolute', inset: 0, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: cropH/3, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: (cropH/3)*2, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: cropW/3, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (cropW/3)*2, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', inset: 0, borderWidth: 3, borderColor: 'rgba(255,255,255,0.95)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: cropH/3, right: 0, height: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: (cropH/3)*2, right: 0, height: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: cropW/3, bottom: 0, width: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (cropW/3)*2, bottom: 0, width: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
         </View>
       </View>
-      <View className="px-5 mt-4">
-        <View className="flex-row">
-          <PrimaryButton title="Reset" variant="secondary" onPress={() => { scale.value = withTiming(1); tx.value = withTiming(0); ty.value = withTiming(0); }} style={{ flex: 1, marginRight: 8 }} />
-          <PrimaryButton title="Save" onPress={doSave} style={{ flex: 1, marginLeft: 8 }} />
+      <View className="px-6 mt-8">
+        <View className="flex-row space-x-3">
+          <PrimaryButton 
+            title="Reset" 
+            variant="secondary" 
+            onPress={() => { 
+              scale.value = withTiming(1); 
+              tx.value = withTiming(0); 
+              ty.value = withTiming(0); 
+            }} 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
+          <PrimaryButton 
+            title="Apply Crop" 
+            icon="checkmark"
+            onPress={doSave} 
+            size="lg"
+            style={{ flex: 1 }} 
+          />
         </View>
       </View>
     </View>

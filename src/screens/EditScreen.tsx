@@ -41,36 +41,72 @@ export default function EditScreen({ route, navigation }: Props) {
 
   const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<any>) => (
     <MotiView from={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
-    <Pressable onLongPress={drag} className="bg-white rounded-2xl p-3 mb-3 flex-row items-center shadow-soft" style={{ opacity: isActive ? 0.85 : 1 }}>
-      <Image source={{ uri: item.uri }} style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: '#eee' }} />
-      <View className="ml-3 flex-1">
-        <Text className="text-text" style={{ fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
+      <Pressable 
+        onLongPress={drag} 
+        className="bg-surface rounded-3xl p-4 mb-4 flex-row items-center shadow-medium border border-border-light" 
+        style={{ opacity: isActive ? 0.85 : 1 }}
+      >
+        <View className="relative">
+          <Image 
+            source={{ uri: item.uri }} 
+            style={{ width: 64, height: 64, borderRadius: 16, backgroundColor: '#F5F5F5' }} 
+          />
+          <View className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary-600 items-center justify-center">
+            <Ionicons name="reorder-two" size={12} color="#FFFFFF" />
+          </View>
+        </View>
+        <View className="ml-4 flex-1">
+          <Text className="text-text-primary text-base" style={{ fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
           {item.fileName || item.uri.split('/').pop()}
         </Text>
-        <Text className="text-gray-500" style={{ fontFamily: 'Inter_400Regular', fontSize: 12 }}>
+          <Text className="text-text-tertiary mt-1" style={{ fontFamily: 'Inter_400Regular', fontSize: 13 }}>
           {item.width}×{item.height}
         </Text>
       </View>
-      <View className="flex-row">
-        <Pressable onPress={() => { setEditorKey(item.key); navigation.navigate('CropEditor', { uri: item.uri, imageWidth: item.width, imageHeight: item.height, onComplete: (res) => { if (editorKey) { setItems(prev => prev.map(it => it.key === editorKey ? { ...it, uri: res.uri, width: res.width, height: res.height } : it)); } } }); }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
-          <Ionicons name="create-outline" size={18} color="#111827" />
+        <View className="flex-row space-x-2">
+          <Pressable 
+            onPress={() => { 
+              setEditorKey(item.key); 
+              navigation.navigate('CropEditor', { 
+                uri: item.uri, 
+                imageWidth: item.width, 
+                imageHeight: item.height, 
+                onComplete: (res) => { 
+                  if (editorKey) { 
+                    setItems(prev => prev.map(it => it.key === editorKey ? { ...it, uri: res.uri, width: res.width, height: res.height } : it)); 
+                  } 
+                } 
+              }); 
+            }} 
+            className="w-10 h-10 rounded-xl bg-neutral-100 items-center justify-center"
+          >
+            <Ionicons name="create-outline" size={16} color="#0F172A" />
         </Pressable>
-        <Pressable onPress={() => { setEditorKey(item.key); setCropVisible(true); }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
-          <Ionicons name="crop-outline" size={18} color="#111827" />
+          <Pressable 
+            onPress={() => { setEditorKey(item.key); setCropVisible(true); }} 
+            className="w-10 h-10 rounded-xl bg-neutral-100 items-center justify-center"
+          >
+            <Ionicons name="crop-outline" size={16} color="#0F172A" />
         </Pressable>
-        <Pressable onPress={async () => {
-          try {
-            const res = await ImageManipulator.manipulateAsync(item.uri, [{ rotate: 90 }], { compress: 1, format: ImageManipulator.SaveFormat.JPEG });
-            setItems(prev => prev.map(it => it.key === item.key ? { ...it, uri: res.uri } : it));
-          } catch {}
-        }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
-          <Ionicons name="return-down-forward-outline" size={18} color="#111827" />
+          <Pressable 
+            onPress={async () => {
+              try {
+                const res = await ImageManipulator.manipulateAsync(item.uri, [{ rotate: 90 }], { compress: 1, format: ImageManipulator.SaveFormat.JPEG });
+                setItems(prev => prev.map(it => it.key === item.key ? { ...it, uri: res.uri } : it));
+              } catch {}
+            }} 
+            className="w-10 h-10 rounded-xl bg-neutral-100 items-center justify-center"
+          >
+            <Ionicons name="return-down-forward-outline" size={16} color="#0F172A" />
         </Pressable>
-        <Pressable onPress={() => removeAt(item.key)} className="px-3 py-2 rounded-xl bg-red-50">
-          <Ionicons name="trash-outline" size={18} color="#DC2626" />
+          <Pressable 
+            onPress={() => removeAt(item.key)} 
+            className="w-10 h-10 rounded-xl bg-error-50 items-center justify-center"
+          >
+            <Ionicons name="trash-outline" size={16} color="#DC2626" />
         </Pressable>
       </View>
-    </Pressable>
+      </Pressable>
     </MotiView>
   ), [removeAt]);
 
@@ -122,46 +158,60 @@ export default function EditScreen({ route, navigation }: Props) {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="px-5 pt-4 pb-2">
+      <View className="px-6 pt-6 pb-4">
         <Animated.View entering={FadeInDown.duration(250)}>
-          <Text className="text-lg text-text" style={{ fontFamily: 'Inter_700Bold' }}>Reorder photos</Text>
-          <Text className="text-gray-600 mt-1" style={{ fontFamily: 'Inter_400Regular' }}>Long-press and drag to reorder.</Text>
+          <Text className="text-2xl text-text-primary" style={{ fontFamily: 'Inter_700Bold' }}>Arrange Your Photos</Text>
+          <Text className="text-text-secondary mt-2 text-base" style={{ fontFamily: 'Inter_400Regular' }}>
+            Long-press and drag to reorder. Tap icons to edit, crop, or rotate.
+          </Text>
         </Animated.View>
-        <View className="flex-row mt-3 items-center">
-          <View className="flex-row items-center bg-white rounded-2xl px-3 py-2 mr-2">
+        <View className="flex-row mt-6 items-center space-x-3">
+          <View className="flex-row items-center bg-surface rounded-2xl px-4 py-3 shadow-soft border border-border-light">
             <Ionicons name="sparkles-outline" size={18} color="#10B981" />
-            <Text className="text-gray-600 mx-2" style={{ fontFamily: 'Inter_500Medium' }}>HD</Text>
+            <Text className="text-text-secondary mx-2" style={{ fontFamily: 'Inter_500Medium' }}>HD Quality</Text>
             {hd ? (
-              <Text className="text-accent" style={{ fontFamily: 'Inter_700Bold' }}>Enabled</Text>
+              <View className="bg-accent-100 px-3 py-1 rounded-lg">
+                <Text className="text-accent-700" style={{ fontFamily: 'Inter_700Bold' }}>Enabled</Text>
+              </View>
             ) : (
-              <Pressable onPress={unlockHD} className="bg-accent rounded-xl px-3 py-1">
+              <Pressable onPress={unlockHD} className="bg-accent-600 rounded-xl px-3 py-1.5">
                 <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Unlock</Text>
               </Pressable>
             )}
           </View>
-          <Pressable onPress={() => setOptsVisible(true)} className="flex-row items-center bg-white rounded-2xl px-3 py-2">
-            <Ionicons name="options-outline" size={18} color="#111827" />
-            <Text className="text-text ml-2" style={{ fontFamily: 'Inter_500Medium' }}>PDF Options</Text>
+          <Pressable 
+            onPress={() => setOptsVisible(true)} 
+            className="flex-row items-center bg-surface rounded-2xl px-4 py-3 shadow-soft border border-border-light"
+          >
+            <Ionicons name="options-outline" size={18} color="#0F172A" />
+            <Text className="text-text-primary ml-2" style={{ fontFamily: 'Inter_500Medium' }}>Options</Text>
           </Pressable>
-          <View className="flex-1" />
         </View>
       </View>
 
-      <View className="flex-1 px-5">
+      <View className="flex-1 px-6">
         <DraggableFlatList
           data={items}
           keyExtractor={(item) => item.key}
           onDragEnd={({ data }) => setItems(data)}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 140 }}
+          contentContainerStyle={{ paddingBottom: 160 }}
         />
       </View>
 
-      <View className="px-5 pb-28">
+      <View className="px-6 pb-32">
         {exporting ? (
-          <View className="bg-primary rounded-2xl p-4 items-center"><ActivityIndicator color="#fff" /></View>
+          <View className="bg-primary-600 rounded-2xl py-4 items-center shadow-medium">
+            <ActivityIndicator color="#fff" size="small" />
+            <Text className="text-white mt-2" style={{ fontFamily: 'Inter_500Medium' }}>Creating PDF...</Text>
+          </View>
         ) : (
-          <PrimaryButton title="Export to PDF" icon="download-outline" onPress={doExport} />
+          <PrimaryButton 
+            title="Export to PDF" 
+            icon="download-outline" 
+            onPress={doExport} 
+            size="lg"
+          />
         )}
       </View>
 
