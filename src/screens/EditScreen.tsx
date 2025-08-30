@@ -47,6 +47,8 @@ export default function EditScreen({ route, navigation }: Props) {
       delete next[key];
       return next;
     });
+  }, []);
+
   const applyAdjustments = useCallback(async (key: string, adjustments: ImageAdjustments) => {
     try {
       const item = items.find(i => i.key === key);
@@ -57,7 +59,7 @@ export default function EditScreen({ route, navigation }: Props) {
         setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
         return;
       }
-  }, []);
+
       const adjustedUri = await applyImageAdjustments(item.uri, adjustments);
       
       // Update the item with the new URI
