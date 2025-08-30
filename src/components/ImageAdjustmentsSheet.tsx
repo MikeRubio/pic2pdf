@@ -84,15 +84,7 @@ export default function ImageAdjustmentsSheet({
           onValueChange={onValueChange}
           minimumTrackTintColor="#0284C7"
           maximumTrackTintColor="#E2E8F0"
-          thumbStyle={{ 
-            backgroundColor: '#0284C7', 
-            width: 24, 
-            height: 24,
-            shadowColor: '#000',
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-            elevation: 4
-          }}
+          thumbTintColor="#0284C7"
         />
         <View className="flex-row justify-between mt-2">
           <Text className="text-text-tertiary text-xs" style={{ fontFamily: 'Inter_400Regular' }}>-100</Text>

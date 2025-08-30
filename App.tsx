@@ -22,7 +22,7 @@ export type RootStackParamList = {
   ExportSuccess: { fileUri: string; hd: boolean };
   Settings: undefined;
   Onboarding: undefined;
-  CropEditor: { uri: string; imageWidth?: number; imageHeight?: number; aspect?: number; onComplete?: (result: { uri: string; width: number; height: number }) => void };
+  CropEditor: { uri: string; imageWidth?: number; imageHeight?: number; aspect?: number; handlerId?: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

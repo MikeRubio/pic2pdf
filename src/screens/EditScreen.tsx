@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import PdfOptionsSheet from '../components/PdfOptionsSheet';
 import * as ImageManipulator from 'expo-image-manipulator';
 import CropRatioSheet from '../components/CropRatioSheet';
+import { setHandler } from '../utils/navBus';
 import ImageAdjustmentsSheet, { ImageAdjustments } from '../components/ImageAdjustmentsSheet';
 import { hasAdjustments } from '../utils/imageAdjustments';
 import FilteredImage from '../components/FilteredImage';
@@ -86,18 +87,13 @@ export default function EditScreen({ route, navigation }: Props) {
         </View>
         <View className="flex-row space-x-3">
           <Pressable 
-            onPress={() => { 
-              setEditorKey(item.key); 
-              navigation.navigate('CropEditor', { 
-                uri: item.uri, 
-                imageWidth: item.width, 
-                imageHeight: item.height, 
-                onComplete: (res) => { 
-                  if (editorKey) { 
-                    setItems(prev => prev.map(it => it.key === editorKey ? { ...it, uri: res.uri, width: res.width, height: res.height } : it)); 
-                  } 
-                } 
-              }); 
+            onPress={() => {
+              setEditorKey(item.key);
+              const handlerId = `${item.key}-${Date.now()}`;
+              setHandler(handlerId, (res: any) => {
+                setItems(prev => prev.map(it => it.key === item.key ? { ...it, uri: res.uri, width: res.width, height: res.height } : it));
+              });
+              navigation.navigate('CropEditor', { uri: item.uri, imageWidth: item.width, imageHeight: item.height, handlerId });
             }} 
             className="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center shadow-soft"
           >
@@ -268,12 +264,16 @@ export default function EditScreen({ route, navigation }: Props) {
         visible={cropVisible}
         onClose={() => setCropVisible(false)}
         onSelect={(key, ratio) => {
-          setCropVisible(false);
-          if (!editorKey) return;
-          const it = items.find(x => x.key === editorKey);
-          if (!it) return;
-          navigation.navigate('CropEditor', { uri: it.uri, imageWidth: it.width, imageHeight: it.height, aspect: ratio, onComplete: (res) => { setItems(prev => prev.map(x => x.key === editorKey ? { ...x, uri: res.uri, width: res.width, height: res.height } : x)); } });
-        }}
+            setCropVisible(false);
+            if (!editorKey) return;
+            const it = items.find(x => x.key === editorKey);
+            if (!it) return;
+            const handlerId = `${editorKey}-${Date.now()}`;
+            setHandler(handlerId, (res: any) => {
+              setItems(prev => prev.map(x => x.key === editorKey ? { ...x, uri: res.uri, width: res.width, height: res.height } : x));
+            });
+            navigation.navigate('CropEditor', { uri: it.uri, imageWidth: it.width, imageHeight: it.height, aspect: ratio, handlerId });
+          }}
       />
       <ImageAdjustmentsSheet
         visible={adjustmentsVisible}
@@ -288,6 +288,12 @@ export default function EditScreen({ route, navigation }: Props) {
     </View>
   );
 }
+
+
+
+
+
+
 
 
 

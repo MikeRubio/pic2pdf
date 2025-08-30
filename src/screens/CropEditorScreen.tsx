@@ -6,11 +6,12 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import PrimaryButton from '../components/PrimaryButton';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { popHandler } from '../utils/navBus';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CropEditor'>;
 
 export default function CropEditorScreen({ route, navigation }: Props) {
-  const { uri, imageWidth, imageHeight, aspect, onComplete } = route.params;
+  const { uri, imageWidth, imageHeight, aspect, handlerId } = route.params;
   const [imgW, setImgW] = useState(imageWidth || 0);
   const [imgH, setImgH] = useState(imageHeight || 0);
   const [busy, setBusy] = useState(false);
@@ -91,7 +92,8 @@ export default function CropEditorScreen({ route, navigation }: Props) {
         compress: 1,
         format: ImageManipulator.SaveFormat.JPEG,
       });
-      if (onComplete) onComplete(result);
+      const handler = popHandler(handlerId);
+      if (handler) handler(result as any);
       navigation.goBack();
     } catch (e) {
       setBusy(false);
