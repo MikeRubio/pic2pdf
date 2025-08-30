@@ -1,0 +1,25 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "types": ["nativewind/types", "react", "react-native"],
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@screens/*": ["src/screens/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "include": [
+    "App.tsx",
+    "src/**/*",
+    "global.d.ts"
+  ]
+}
+

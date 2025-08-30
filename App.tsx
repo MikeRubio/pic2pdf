@@ -1,0 +1,106 @@
+import React, { useEffect } from 'react';
+import { StatusBar } from 'react-native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold } from '@expo-google-fonts/inter';
+import HomeScreen from './src/screens/HomeScreen';
+import EditScreen from './src/screens/EditScreen';
+import ExportSuccessScreen from './src/screens/ExportSuccessScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import { View, ActivityIndicator, Platform, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { setTestDeviceIDAsync } from 'expo-ads-admob';
+
+export type RootStackParamList = {
+  Home: undefined;
+  Edit: { images: Array<{ uri: string; width?: number; height?: number; fileName?: string; mimeType?: string }> } | undefined;
+  ExportSuccess: { fileUri: string; hd: boolean };
+  Settings: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+export default function App() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_700Bold,
+  });
+
+  useEffect(() => {
+    // Android notification channel
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'Default',
+        importance: Notifications.AndroidImportance.DEFAULT,
+      }).catch(() => {});
+    }
+    // AdMob test device config
+    setTestDeviceIDAsync('EMULATOR').catch(() => {});
+  }, []);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  const theme = {
+    ...DefaultTheme,
+    colors: { ...DefaultTheme.colors, background: '#F9FAFB', text: '#111827' },
+  };
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer theme={theme}>
+          <StatusBar barStyle={Platform.OS === 'ios' ? 'dark-content' : 'default'} />
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={({ navigation }) => ({
+                title: 'Photo2PDF',
+                headerTitleStyle: { fontFamily: 'Inter_700Bold', color: '#111827' },
+                headerRight: () => (
+                  <Pressable onPress={() => navigation.navigate('Settings')} style={{ paddingHorizontal: 8 }}>
+                    <Ionicons name="settings-outline" size={22} color="#111827" />
+                  </Pressable>
+                ),
+              })}
+            />
+            <Stack.Screen
+              name="Edit"
+              component={EditScreen}
+              options={{ title: 'Arrange & Export', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+            />
+            <Stack.Screen
+              name="ExportSuccess"
+              component={ExportSuccessScreen}
+              options={{ title: 'Export Complete', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{ title: 'Settings', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
+
