@@ -7,9 +7,12 @@ import BannerAd from '../components/BannerAd';
 import { useAdManager } from '../hooks/useAdManager';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-import { motion } from 'framer-motion/native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { MotiView } from 'moti';
 import { getRecents, RecentPdf } from '../utils/recents';
 import { useFocusEffect } from '@react-navigation/native';
+import PrimaryButton from '../components/PrimaryButton';
+import { Ionicons } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -133,33 +136,31 @@ export default function HomeScreen({ navigation }: Props) {
   return (
     <View className="flex-1 bg-background">
       <View className="px-5 pt-6 pb-3">
-        <motion.View initial={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
+        <Animated.View entering={FadeInDown.duration(250)}>
           <Text className="text-2xl text-text mb-2" style={{ fontFamily: 'Inter_700Bold' }}>Photo2PDF</Text>
           <Text className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }}>
             Select photos, arrange them, and export to a single PDF.
           </Text>
-        </motion.View>
+        </Animated.View>
         <View className="flex-row mt-5">
-          <Pressable onPress={pickImages} className="flex-1 mr-2 bg-primary rounded-2xl p-4 items-center">
-            <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Pick Photos</Text>
-          </Pressable>
-          <Pressable onPress={takePhoto} className="flex-1 ml-2 bg-accent rounded-2xl p-4 items-center">
-            <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Camera</Text>
-          </Pressable>
+          <PrimaryButton title="Pick Photos" icon="images-outline" onPress={pickImages} style={{ flex: 1, marginRight: 8 }} />
+          <PrimaryButton title="Camera" icon="camera-outline" onPress={takePhoto} variant="accent" style={{ flex: 1, marginLeft: 8 }} />
         </View>
 
         {recents.length > 0 && (
-          <Pressable onPress={() => navigation.navigate('Settings')} className="mt-5 bg-white rounded-2xl p-4 shadow-soft">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-text" style={{ fontFamily: 'Inter_700Bold' }}>Recent PDFs</Text>
-              <Text className="text-primary" style={{ fontFamily: 'Inter_500Medium' }}>View All</Text>
-            </View>
-            {recents.map((r) => (
-              <Text key={r.fileUri} className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={1}>
-                • {r.name}
-              </Text>
-            ))}
-          </Pressable>
+          <MotiView from={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
+            <Pressable onPress={() => navigation.navigate('Settings')} className="mt-5 bg-white rounded-2xl p-4 shadow-soft">
+              <View className="flex-row items-center justify-between mb-2">
+                <Text className="text-text" style={{ fontFamily: 'Inter_700Bold' }}>Recent PDFs</Text>
+                <Text className="text-primary" style={{ fontFamily: 'Inter_500Medium' }}>View All</Text>
+              </View>
+              {recents.map((r) => (
+                <Text key={r.fileUri} className="text-gray-600" style={{ fontFamily: 'Inter_400Regular' }} numberOfLines={1}>
+                  • {r.name}
+                </Text>
+              ))}
+            </Pressable>
+          </MotiView>
         )}
       </View>
 
@@ -172,16 +173,15 @@ export default function HomeScreen({ navigation }: Props) {
           contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             <View className="items-center mt-16">
-              <Text className="text-gray-500" style={{ fontFamily: 'Inter_400Regular' }}>No photos selected yet.</Text>
+              <Ionicons name="images-outline" size={40} color="#9CA3AF" />
+              <Text className="text-gray-500 mt-2" style={{ fontFamily: 'Inter_400Regular' }}>No photos selected yet.</Text>
             </View>
           }
         />
       </View>
 
       <View className="px-5 pb-28">
-        <Pressable onPress={goEdit} className="bg-text rounded-2xl p-4 items-center">
-          <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Continue</Text>
-        </Pressable>
+        <PrimaryButton title="Continue" icon="arrow-forward" onPress={goEdit} variant="dark" disabled={!images.length} />
       </View>
 
       <BannerAd adUnitId={ad.bannerUnitId} />

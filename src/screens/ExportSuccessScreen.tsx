@@ -8,8 +8,10 @@ import { useAdManager } from '../hooks/useAdManager';
 // pdf utils not needed here
 import * as FileSystem from 'expo-file-system';
 import { openPdf, saveToDownloadsAndroid } from '../utils/openUtils';
+import PrimaryButton from '../components/PrimaryButton';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { motion } from 'framer-motion/native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ExportSuccess'>;
 
@@ -80,12 +82,12 @@ export default function ExportSuccessScreen({ route, navigation }: Props) {
   return (
     <View className="flex-1 bg-background">
       <View className="px-6 pt-8 pb-4 items-center">
-        <motion.View initial={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
+        <Animated.View entering={FadeInDown.duration(250)}>
           <Text className="text-2xl text-text text-center" style={{ fontFamily: 'Inter_700Bold' }}>Export Successful</Text>
           <Text className="text-gray-600 mt-2 text-center" style={{ fontFamily: 'Inter_400Regular' }}>
             Your PDF is saved locally and ready to share.
           </Text>
-        </motion.View>
+        </Animated.View>
       </View>
 
       <View className="px-6 mt-2">
@@ -98,24 +100,18 @@ export default function ExportSuccessScreen({ route, navigation }: Props) {
 
       <View className="px-6 mt-6">
         <View className="flex-row">
-          <Pressable onPress={share} className="flex-1 bg-primary rounded-2xl p-4 items-center mr-2">
-            <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Share</Text>
-          </Pressable>
-          <Pressable onPress={open} className="flex-1 bg-text rounded-2xl p-4 items-center ml-2">
-            <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Open</Text>
-          </Pressable>
+          <PrimaryButton title="Share" icon="share-social-outline" onPress={share} style={{ flex: 1, marginRight: 8 }} />
+          <PrimaryButton title="Open" icon="open-outline" onPress={open} variant="dark" style={{ flex: 1, marginLeft: 8 }} />
         </View>
       </View>
 
       {Platform.OS === 'android' && (
         <View className="px-6 mt-3">
-          <Pressable disabled={busy} onPress={saveToDownloads} className="bg-text rounded-2xl p-4 items-center">
-            {busy ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Save to Downloads</Text>
-            )}
-          </Pressable>
+          {busy ? (
+            <View className="bg-text rounded-2xl p-4 items-center"><ActivityIndicator color="#fff" /></View>
+          ) : (
+            <PrimaryButton title="Save to Downloads" icon="download-outline" onPress={saveToDownloads} variant="dark" />
+          )}
         </View>
       )}
 

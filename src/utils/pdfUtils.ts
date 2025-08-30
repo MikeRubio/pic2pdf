@@ -10,10 +10,18 @@ export type ImageInput = {
   fileName?: string;
 };
 
+export type FitMode = 'contain' | 'cover' | 'stretch';
+export type PaperPreset = 'auto' | 'A4' | 'Letter' | 'Legal';
+export type Orientation = 'auto' | 'portrait' | 'landscape';
+
 export type PdfOptions = {
   dpi?: number; // Quality control: 150 (default) or 300 for HD
   title?: string;
   outputName?: string; // without extension
+  paper?: PaperPreset; // default 'auto' (image-sized pages)
+  orientation?: Orientation; // default 'auto'
+  marginsMm?: number | { top: number; right: number; bottom: number; left: number }; // default 10
+  fit?: FitMode; // default 'contain'
 };
 
 const DEFAULT_DPI = 150;
@@ -28,6 +36,36 @@ async function ensureDir(dir: string) {
 function points(px: number, dpi: number) {
   // px -> pt conversion using dpi
   return (px / dpi) * 72.0;
+}
+
+function mmToPt(mm: number) {
+  return (mm / 25.4) * 72.0;
+}
+
+function inToPt(inches: number) {
+  return inches * 72.0;
+}
+
+function getMarginsPts(marginsMm?: PdfOptions['marginsMm']) {
+  const m = marginsMm ?? 10;
+  const obj = typeof m === 'number' ? { top: m, right: m, bottom: m, left: m } : m;
+  return {
+    top: mmToPt(obj.top),
+    right: mmToPt(obj.right),
+    bottom: mmToPt(obj.bottom),
+    left: mmToPt(obj.left),
+  };
+}
+
+function getPaperSizePts(paper: PaperPreset, orientation: Orientation): [number, number] | null {
+  let w = 0, h = 0;
+  if (paper === 'A4') { w = mmToPt(210); h = mmToPt(297); }
+  else if (paper === 'Letter') { w = inToPt(8.5); h = inToPt(11); }
+  else if (paper === 'Legal') { w = inToPt(8.5); h = inToPt(14); }
+  else return null;
+  if (orientation === 'landscape') return [h, w];
+  if (orientation === 'portrait' || orientation === 'auto') return [w, h];
+  return [w, h];
 }
 
 function extFromUriOrMime(uri: string, mime?: string) {
@@ -79,14 +117,67 @@ export async function imagesToPdf(images: ImageInput[], opts: PdfOptions = {}): 
       }
     }
 
-    const pageWidth = points(size.width!, dpi);
-    const pageHeight = points(size.height!, dpi);
+    const paper = opts.paper ?? 'auto';
+    const orientation = opts.orientation ?? 'auto';
+    const margins = getMarginsPts(opts.marginsMm);
+    const fit: FitMode = opts.fit ?? 'contain';
+
+    // Determine page size in points
+    let pageWidth: number;
+    let pageHeight: number;
+    const autoPts: [number, number] = [points(size.width!, dpi), points(size.height!, dpi)];
+    if (paper === 'auto') {
+      pageWidth = autoPts[0];
+      pageHeight = autoPts[1];
+      if (orientation === 'landscape' && pageHeight > pageWidth) {
+        [pageWidth, pageHeight] = [pageHeight, pageWidth];
+      } else if (orientation === 'portrait' && pageWidth > pageHeight) {
+        [pageWidth, pageHeight] = [pageHeight, pageWidth];
+      }
+    } else {
+      const preset = getPaperSizePts(paper, orientation);
+      [pageWidth, pageHeight] = preset!;
+    }
+
     const page = pdfDoc.addPage([pageWidth, pageHeight]);
+
+    const contentW = Math.max(0, pageWidth - margins.left - margins.right);
+    const contentH = Math.max(0, pageHeight - margins.top - margins.bottom);
+
+    // target draw size
+    const imgRatio = (embed.width / embed.height);
+    const boxRatio = contentW / contentH;
+    let drawW = contentW;
+    let drawH = contentH;
+    if (fit === 'contain') {
+      if (imgRatio > boxRatio) {
+        drawW = contentW;
+        drawH = contentW / imgRatio;
+      } else {
+        drawH = contentH;
+        drawW = contentH * imgRatio;
+      }
+    } else if (fit === 'cover') {
+      if (imgRatio < boxRatio) {
+        drawW = contentW;
+        drawH = contentW / imgRatio;
+      } else {
+        drawH = contentH;
+        drawW = contentH * imgRatio;
+      }
+    } else if (fit === 'stretch') {
+      drawW = contentW;
+      drawH = contentH;
+    }
+
+    const x = margins.left + (contentW - drawW) / 2;
+    const y = margins.bottom + (contentH - drawH) / 2;
+
     page.drawImage(embed, {
-      x: 0,
-      y: 0,
-      width: pageWidth,
-      height: pageHeight,
+      x,
+      y,
+      width: drawW,
+      height: drawH,
     });
   }
 

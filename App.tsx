@@ -4,21 +4,25 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold } from '@expo-google-fonts/inter';
 import HomeScreen from './src/screens/HomeScreen';
 import EditScreen from './src/screens/EditScreen';
 import ExportSuccessScreen from './src/screens/ExportSuccessScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import { View, ActivityIndicator, Platform, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { setTestDeviceIDAsync } from 'expo-ads-admob';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type RootStackParamList = {
   Home: undefined;
   Edit: { images: Array<{ uri: string; width?: number; height?: number; fileName?: string; mimeType?: string }> } | undefined;
   ExportSuccess: { fileUri: string; hd: boolean };
   Settings: undefined;
+  Onboarding: undefined;
+  CropEditor: { uri: string; imageWidth?: number; imageHeight?: number; aspect?: number; onComplete?: (result: { uri: string; width: number; height: number }) => void };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,6 +41,7 @@ export default function App() {
     Inter_500Medium,
     Inter_700Bold,
   });
+  const [showOnboarding, setShowOnboarding] = React.useState<boolean | null>(null);
 
   useEffect(() => {
     // Android notification channel
@@ -46,11 +51,27 @@ export default function App() {
         importance: Notifications.AndroidImportance.DEFAULT,
       }).catch(() => {});
     }
-    // AdMob test device config
-    setTestDeviceIDAsync('EMULATOR').catch(() => {});
+    // AdMob test device config (optional; skip in Expo Go)
+    if (Constants.appOwnership !== 'expo') {
+      (async () => {
+        try {
+          const mod = await import('expo-ads-admob');
+          // @ts-ignore
+          await mod.setTestDeviceIDAsync('EMULATOR');
+        } catch {}
+      })();
+    }
+    (async () => {
+      try {
+        const v = await AsyncStorage.getItem('p2p:onboarded');
+        setShowOnboarding(!v);
+      } catch {
+        setShowOnboarding(true);
+      }
+    })();
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || showOnboarding === null) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
         <ActivityIndicator />
@@ -69,6 +90,11 @@ export default function App() {
         <NavigationContainer theme={theme}>
           <StatusBar barStyle={Platform.OS === 'ios' ? 'dark-content' : 'default'} />
           <Stack.Navigator>
+            {showOnboarding ? (
+              <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
+                {() => <OnboardingScreen onDone={() => setShowOnboarding(false)} />}
+              </Stack.Screen>
+            ) : null}
             <Stack.Screen
               name="Home"
               component={HomeScreen}
@@ -97,10 +123,14 @@ export default function App() {
               component={SettingsScreen}
               options={{ title: 'Settings', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
             />
+            <Stack.Screen
+              name="CropEditor"
+              component={require('./src/screens/CropEditorScreen').default}
+              options={{ title: 'Crop', headerTitleStyle: { fontFamily: 'Inter_700Bold' } }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
-

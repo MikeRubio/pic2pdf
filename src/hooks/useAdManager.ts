@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AdMobRewarded, AdMobInterstitial } from 'expo-ads-admob';
 
 const BANNER_TEST_UNIT = 'ca-app-pub-3940256099942544/6300978111';
 const INTERSTITIAL_TEST_UNIT = 'ca-app-pub-3940256099942544/1033173712';
@@ -22,6 +22,7 @@ export function useAdManager(): AdManager {
   const [rewardedLoading, setRewardedLoading] = useState(false);
   const [interstitialLoading, setInterstitialLoading] = useState(false);
   const cooldownRef = useRef(0);
+  const admobRef = useRef<any | null>(null);
 
   const bannerUnitId = useMemo(() => BANNER_TEST_UNIT, []);
 
@@ -46,10 +47,20 @@ export function useAdManager(): AdManager {
   }, []);
 
   const showInterstitialIfAllowed = useCallback(async () => {
+    if (Constants.appOwnership === 'expo') return false; // Not supported in Expo Go
     const remaining = await getCooldownRemaining();
     if (remaining > 0) return false;
     try {
       setInterstitialLoading(true);
+      if (!admobRef.current) {
+        try {
+          admobRef.current = require('expo-ads-admob');
+        } catch {
+          return false; // Not available (e.g., Expo Go)
+        }
+      }
+      const { AdMobInterstitial } = admobRef.current;
+      if (!AdMobInterstitial) return false;
       AdMobInterstitial.setAdUnitID(INTERSTITIAL_TEST_UNIT);
       await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true });
       await AdMobInterstitial.showAdAsync();
@@ -64,11 +75,21 @@ export function useAdManager(): AdManager {
   }, [getCooldownRemaining, setCooldownNow]);
 
   const showRewardedForHD = useCallback(async (onReward?: () => void) => {
+    if (Constants.appOwnership === 'expo') return false; // Not supported in Expo Go
     try {
       setRewardedLoading(true);
+      if (!admobRef.current) {
+        try {
+          admobRef.current = require('expo-ads-admob');
+        } catch {
+          return false;
+        }
+      }
+      const { AdMobRewarded } = admobRef.current;
+      if (!AdMobRewarded) return false;
       AdMobRewarded.setAdUnitID(REWARDED_TEST_UNIT);
       await AdMobRewarded.requestAdAsync();
-      const result = await AdMobRewarded.showAdAsync();
+      await AdMobRewarded.showAdAsync();
       // Expo's result may not explicitly return reward; invoke callback post-show
       onReward?.();
       return true;
@@ -88,4 +109,3 @@ export function useAdManager(): AdManager {
     interstitialLoading,
   };
 }
-

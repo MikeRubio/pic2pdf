@@ -8,9 +8,9 @@ module.exports = {
   // icon: "./assets/icon.png",
   userInterfaceStyle: "automatic",
   splash: {
-    // image: "./assets/splash.png",
+    // Provide a clean brand color splash without an image for now
     resizeMode: "contain",
-    backgroundColor: "#F9FAFB"
+    backgroundColor: "#2563EB"
   },
   assetBundlePatterns: ["**/*"],
   ios: {

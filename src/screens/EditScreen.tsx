@@ -6,10 +6,16 @@ import { RootStackParamList } from '../../App';
 import BannerAd from '../components/BannerAd';
 import { useAdManager } from '../hooks/useAdManager';
 import * as Haptics from 'expo-haptics';
-import { imagesToPdf, ImageInput } from '../utils/pdfUtils';
+import { imagesToPdf, ImageInput, FitMode, PaperPreset, Orientation } from '../utils/pdfUtils';
 import { addRecent } from '../utils/recents';
 import * as Notifications from 'expo-notifications';
-import { motion } from 'framer-motion/native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import PrimaryButton from '../components/PrimaryButton';
+import { Ionicons } from '@expo/vector-icons';
+import PdfOptionsSheet from '../components/PdfOptionsSheet';
+import * as ImageManipulator from 'expo-image-manipulator';
+import CropRatioSheet from '../components/CropRatioSheet';
+import { MotiView } from 'moti';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Edit'>;
 
@@ -18,6 +24,15 @@ export default function EditScreen({ route, navigation }: Props) {
   const [items, setItems] = useState(initial);
   const [exporting, setExporting] = useState(false);
   const [hd, setHd] = useState(false);
+  const [optsVisible, setOptsVisible] = useState(false);
+  const [pdfUi, setPdfUi] = useState<{ paper: PaperPreset; orientation: Orientation; margins: 'none'|'small'|'medium'|'large'; fit: FitMode }>({
+    paper: 'auto',
+    orientation: 'auto',
+    margins: 'small',
+    fit: 'contain',
+  });
+  const [cropVisible, setCropVisible] = useState(false);
+  const [editorKey, setEditorKey] = useState<string | null>(null);
   const ad = useAdManager();
 
   const removeAt = useCallback((key: string) => {
@@ -25,6 +40,7 @@ export default function EditScreen({ route, navigation }: Props) {
   }, []);
 
   const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<any>) => (
+    <MotiView from={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
     <Pressable onLongPress={drag} className="bg-white rounded-2xl p-3 mb-3 flex-row items-center shadow-soft" style={{ opacity: isActive ? 0.85 : 1 }}>
       <Image source={{ uri: item.uri }} style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: '#eee' }} />
       <View className="ml-3 flex-1">
@@ -35,10 +51,27 @@ export default function EditScreen({ route, navigation }: Props) {
           {item.width}×{item.height}
         </Text>
       </View>
-      <Pressable onPress={() => removeAt(item.key)} className="px-3 py-2 rounded-xl bg-red-50">
-        <Text className="text-red-600" style={{ fontFamily: 'Inter_500Medium' }}>Delete</Text>
-      </Pressable>
+      <View className="flex-row">
+        <Pressable onPress={() => { setEditorKey(item.key); navigation.navigate('CropEditor', { uri: item.uri, imageWidth: item.width, imageHeight: item.height, onComplete: (res) => { if (editorKey) { setItems(prev => prev.map(it => it.key === editorKey ? { ...it, uri: res.uri, width: res.width, height: res.height } : it)); } } }); }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
+          <Ionicons name="create-outline" size={18} color="#111827" />
+        </Pressable>
+        <Pressable onPress={() => { setEditorKey(item.key); setCropVisible(true); }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
+          <Ionicons name="crop-outline" size={18} color="#111827" />
+        </Pressable>
+        <Pressable onPress={async () => {
+          try {
+            const res = await ImageManipulator.manipulateAsync(item.uri, [{ rotate: 90 }], { compress: 1, format: ImageManipulator.SaveFormat.JPEG });
+            setItems(prev => prev.map(it => it.key === item.key ? { ...it, uri: res.uri } : it));
+          } catch {}
+        }} className="px-3 py-2 rounded-xl bg-gray-100 mr-2">
+          <Ionicons name="return-down-forward-outline" size={18} color="#111827" />
+        </Pressable>
+        <Pressable onPress={() => removeAt(item.key)} className="px-3 py-2 rounded-xl bg-red-50">
+          <Ionicons name="trash-outline" size={18} color="#DC2626" />
+        </Pressable>
+      </View>
     </Pressable>
+    </MotiView>
   ), [removeAt]);
 
   const imagesForPdf: ImageInput[] = useMemo(() => items.map(({ key, ...rest }) => rest), [items]);
@@ -63,7 +96,15 @@ export default function EditScreen({ route, navigation }: Props) {
       // Interstitial with cooldown (non-blocking if unavailable)
       await ad.showInterstitialIfAllowed();
       const dpi = hd ? 300 : 150;
-      const { fileUri, fileName } = await imagesToPdf(imagesForPdf, { dpi, title: 'Photo2PDF Export' });
+      const marginsMap = { none: 0, small: 8, medium: 15, large: 25 } as const;
+      const { fileUri, fileName } = await imagesToPdf(imagesForPdf, {
+        dpi,
+        title: 'Photo2PDF Export',
+        paper: pdfUi.paper,
+        orientation: pdfUi.orientation,
+        marginsMm: marginsMap[pdfUi.margins],
+        fit: pdfUi.fit,
+      });
       await addRecent({ fileUri, name: fileName, createdAt: Date.now(), hd });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await Notifications.scheduleNotificationAsync({
@@ -82,21 +123,26 @@ export default function EditScreen({ route, navigation }: Props) {
   return (
     <View className="flex-1 bg-background">
       <View className="px-5 pt-4 pb-2">
-        <motion.View initial={{ opacity: 0, translateY: 8 }} animate={{ opacity: 1, translateY: 0 }}>
+        <Animated.View entering={FadeInDown.duration(250)}>
           <Text className="text-lg text-text" style={{ fontFamily: 'Inter_700Bold' }}>Reorder photos</Text>
           <Text className="text-gray-600 mt-1" style={{ fontFamily: 'Inter_400Regular' }}>Long-press and drag to reorder.</Text>
-        </motion.View>
+        </Animated.View>
         <View className="flex-row mt-3 items-center">
           <View className="flex-row items-center bg-white rounded-2xl px-3 py-2 mr-2">
-            <Text className="text-gray-600 mr-2" style={{ fontFamily: 'Inter_500Medium' }}>HD:</Text>
+            <Ionicons name="sparkles-outline" size={18} color="#10B981" />
+            <Text className="text-gray-600 mx-2" style={{ fontFamily: 'Inter_500Medium' }}>HD</Text>
             {hd ? (
               <Text className="text-accent" style={{ fontFamily: 'Inter_700Bold' }}>Enabled</Text>
             ) : (
               <Pressable onPress={unlockHD} className="bg-accent rounded-xl px-3 py-1">
-                <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Unlock (Ad)</Text>
+                <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Unlock</Text>
               </Pressable>
             )}
           </View>
+          <Pressable onPress={() => setOptsVisible(true)} className="flex-row items-center bg-white rounded-2xl px-3 py-2">
+            <Ionicons name="options-outline" size={18} color="#111827" />
+            <Text className="text-text ml-2" style={{ fontFamily: 'Inter_500Medium' }}>PDF Options</Text>
+          </Pressable>
           <View className="flex-1" />
         </View>
       </View>
@@ -112,17 +158,35 @@ export default function EditScreen({ route, navigation }: Props) {
       </View>
 
       <View className="px-5 pb-28">
-        <Pressable disabled={exporting} onPress={doExport} className="bg-primary rounded-2xl p-4 items-center">
-          {exporting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-white" style={{ fontFamily: 'Inter_700Bold' }}>Export to PDF</Text>
-          )}
-        </Pressable>
+        {exporting ? (
+          <View className="bg-primary rounded-2xl p-4 items-center"><ActivityIndicator color="#fff" /></View>
+        ) : (
+          <PrimaryButton title="Export to PDF" icon="download-outline" onPress={doExport} />
+        )}
       </View>
 
       <BannerAd adUnitId={ad.bannerUnitId} />
+      <PdfOptionsSheet
+        visible={optsVisible}
+        onClose={() => setOptsVisible(false)}
+        value={pdfUi}
+        onChange={setPdfUi}
+      />
+      <CropRatioSheet
+        visible={cropVisible}
+        onClose={() => setCropVisible(false)}
+        onSelect={(key, ratio) => {
+          setCropVisible(false);
+          if (!editorKey) return;
+          const it = items.find(x => x.key === editorKey);
+          if (!it) return;
+          navigation.navigate('CropEditor', { uri: it.uri, imageWidth: it.width, imageHeight: it.height, aspect: ratio, onComplete: (res) => { setItems(prev => prev.map(x => x.key === editorKey ? { ...x, uri: res.uri, width: res.width, height: res.height } : x)); } });
+        }}
+      />
     </View>
   );
 }
+
+
+
 
