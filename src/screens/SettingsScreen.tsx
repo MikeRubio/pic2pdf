@@ -93,6 +93,23 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      <View className="bg-surfaceElevated rounded-4xl p-6 mb-6 shadow-large border border-border-light">
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <View className="w-12 h-12 rounded-3xl bg-slate-100 items-center justify-center mr-4">
+              <Ionicons name="walk-outline" size={24} color="#475569" />
+            </View>
+            <Text className="text-text-primary text-lg" style={{ fontFamily: 'Inter_500Medium' }}>Onboarding</Text>
+          </View>
+        </View>
+        <Text className="text-text-secondary text-base mb-4" style={{ fontFamily: 'Inter_400Regular' }}>
+          Reset the intro tutorial and see it again on next launch.
+        </Text>
+        <Pressable onPress={async () => { const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default; await AsyncStorage.removeItem('p2p:onboarded'); Alert.alert('Onboarding reset', 'Restart the app to see onboarding again.'); }} className="bg-primary-600 rounded-2xl px-6 py-4 items-center shadow-medium">
+          <Text className="text-white text-base" style={{ fontFamily: 'Inter_700Bold' }}>Reset Onboarding</Text>
+        </Pressable>
+      </View>
+
       {Platform.OS === 'android' && (
         <View className="bg-surfaceElevated rounded-4xl p-6 mb-6 shadow-large border border-border-light">
           <View className="flex-row items-center mb-4">
