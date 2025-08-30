@@ -182,8 +182,6 @@ export default function SettingsScreen() {
                     className="w-8 h-8 bg-error-50 rounded-lg items-center justify-center"
                   >
                     <Ionicons name="trash-outline" size={14} color="#DC2626" />
-                  </Text>
-                </View>
                   </Pressable>
                 </View>
               </View>
