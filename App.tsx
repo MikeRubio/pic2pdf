@@ -32,6 +32,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -41,29 +43,31 @@ export default function App() {
     Inter_500Medium,
     Inter_700Bold,
   });
-  const [showOnboarding, setShowOnboarding] = React.useState<boolean | null>(null);
+  const [showOnboarding, setShowOnboarding] = React.useState<boolean | null>(
+    null
+  );
 
   useEffect(() => {
     // Android notification channel
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'Default',
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "Default",
         importance: Notifications.AndroidImportance.DEFAULT,
       }).catch(() => {});
     }
     // AdMob test device config (optional; skip in Expo Go)
-    if (Constants.appOwnership !== 'expo') {
+    if (Constants.appOwnership !== "expo") {
       (async () => {
         try {
-          const mod = await import('expo-ads-admob');
+          const mod = await import("expo-ads-admob");
           // @ts-ignore
-          await mod.setTestDeviceIDAsync('EMULATOR');
+          await mod.setTestDeviceIDAsync("EMULATOR");
         } catch {}
       })();
     }
     (async () => {
       try {
-        const v = await AsyncStorage.getItem('p2p:onboarded');
+        const v = await AsyncStorage.getItem("p2p:onboarded");
         setShowOnboarding(!v);
       } catch {
         setShowOnboarding(true);
@@ -73,7 +77,14 @@ export default function App() {
 
   if (!fontsLoaded || showOnboarding === null) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#F9FAFB",
+        }}
+      >
         <ActivityIndicator />
       </View>
     );
@@ -81,12 +92,12 @@ export default function App() {
 
   const theme = {
     ...DefaultTheme,
-    colors: { 
-      ...DefaultTheme.colors, 
-      background: '#FAFBFC', 
-      text: '#0F172A',
-      card: '#FFFFFF',
-      border: '#E2E8F0'
+    colors: {
+      ...DefaultTheme.colors,
+      background: "#FAFBFC",
+      text: "#0F172A",
+      card: "#FFFFFF",
+      border: "#E2E8F0",
     },
   };
 
@@ -94,35 +105,43 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer theme={theme}>
-          <StatusBar barStyle={Platform.OS === 'ios' ? 'dark-content' : 'default'} />
+          <StatusBar
+            barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+          />
           <Stack.Navigator>
             {showOnboarding ? (
               <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
-                {() => <OnboardingScreen onDone={() => setShowOnboarding(false)} />}
+                {() => (
+                  <OnboardingScreen onDone={() => setShowOnboarding(false)} />
+                )}
               </Stack.Screen>
             ) : null}
             <Stack.Screen
               name="Home"
               component={HomeScreen}
               options={({ navigation }) => ({
-                title: 'Photo2PDF',
-                headerTitleStyle: { 
-                  fontFamily: 'Inter_700Bold', 
-                  color: '#0F172A',
-                  fontSize: 20
+                title: "Photo2PDF",
+                headerTitleStyle: {
+                  fontFamily: "Inter_700Bold",
+                  color: "#0F172A",
+                  fontSize: 20,
                 },
                 headerStyle: {
-                  backgroundColor: '#FAFBFC',
-                  shadowColor: 'transparent',
+                  backgroundColor: "#FAFBFC",
+                  shadowColor: "transparent",
                   elevation: 0,
                   borderBottomWidth: 0,
                 },
                 headerRight: () => (
-                  <Pressable 
-                    onPress={() => navigation.navigate('Settings')} 
+                  <Pressable
+                    onPress={() => navigation.navigate("Settings")}
                     className="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center shadow-soft"
                   >
-                    <Ionicons name="settings-outline" size={22} color="#475569" />
+                    <Ionicons
+                      name="settings-outline"
+                      size={22}
+                      color="#475569"
+                    />
                   </Pressable>
                 ),
               })}
@@ -130,73 +149,61 @@ export default function App() {
             <Stack.Screen
               name="Edit"
               component={EditScreen}
-              options={{ 
-                title: 'Arrange & Export', 
-                headerTitleStyle: { 
-                  fontFamily: 'Inter_700Bold',
-                  color: '#0F172A',
-                  fontSize: 20
+              options={{
+                title: "Arrange & Export",
+                headerTitleStyle: {
+                  fontFamily: "Inter_700Bold",
+                  color: "#0F172A",
+                  fontSize: 20,
                 },
                 headerStyle: {
-                  backgroundColor: '#FAFBFC',
-                  shadowColor: 'transparent',
-                  elevation: 0,
-                  borderBottomWidth: 0,
-                }
+                  backgroundColor: "#FAFBFC",
+                },
               }}
             />
             <Stack.Screen
               name="ExportSuccess"
               component={ExportSuccessScreen}
-              options={{ 
-                title: 'Export Complete', 
-                headerTitleStyle: { 
-                  fontFamily: 'Inter_700Bold',
-                  color: '#0F172A',
-                  fontSize: 20
+              options={{
+                title: "Export Complete",
+                headerTitleStyle: {
+                  fontFamily: "Inter_700Bold",
+                  color: "#0F172A",
+                  fontSize: 20,
                 },
                 headerStyle: {
-                  backgroundColor: '#FAFBFC',
-                  shadowColor: 'transparent',
-                  elevation: 0,
-                  borderBottomWidth: 0,
-                }
+                  backgroundColor: "#FAFBFC",
+                },
               }}
             />
             <Stack.Screen
               name="Settings"
               component={SettingsScreen}
-              options={{ 
-                title: 'Settings', 
-                headerTitleStyle: { 
-                  fontFamily: 'Inter_700Bold',
-                  color: '#0F172A',
-                  fontSize: 20
+              options={{
+                title: "Settings",
+                headerTitleStyle: {
+                  fontFamily: "Inter_700Bold",
+                  color: "#0F172A",
+                  fontSize: 20,
                 },
                 headerStyle: {
-                  backgroundColor: '#FAFBFC',
-                  shadowColor: 'transparent',
-                  elevation: 0,
-                  borderBottomWidth: 0,
-                }
+                  backgroundColor: "#FAFBFC",
+                },
               }}
             />
             <Stack.Screen
               name="CropEditor"
-              component={require('./src/screens/CropEditorScreen').default}
-              options={{ 
-                title: 'Crop Image', 
-                headerTitleStyle: { 
-                  fontFamily: 'Inter_700Bold',
-                  color: '#0F172A',
-                  fontSize: 20
+              component={require("./src/screens/CropEditorScreen").default}
+              options={{
+                title: "Crop Image",
+                headerTitleStyle: {
+                  fontFamily: "Inter_700Bold",
+                  color: "#0F172A",
+                  fontSize: 20,
                 },
                 headerStyle: {
-                  backgroundColor: '#FAFBFC',
-                  shadowColor: 'transparent',
-                  elevation: 0,
-                  borderBottomWidth: 0,
-                }
+                  backgroundColor: "#FAFBFC",
+                },
               }}
             />
           </Stack.Navigator>

@@ -3,6 +3,7 @@ import { View, Text, Pressable, Linking, Alert, FlatList, Platform } from 'react
 import { getRecents, RecentPdf, removeRecent, clearRecents } from '../utils/recents';
 import * as Sharing from 'expo-sharing';
 import { openPdf, chooseAndSaveDownloadsDirAndroid, getSavedDownloadsDirAndroid, setSavedDownloadsDirAndroid } from '../utils/openUtils';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SettingsScreen() {
   const [recents, setRecents] = useState<RecentPdf[]>([]);

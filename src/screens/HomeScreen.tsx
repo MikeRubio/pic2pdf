@@ -44,9 +44,13 @@ export default function HomeScreen({ navigation }: Props) {
 
   const pickImages = useCallback(async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please allow photo access to continue.');
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please allow photo access to continue."
+        );
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -61,21 +65,24 @@ export default function HomeScreen({ navigation }: Props) {
         width: a.width,
         height: a.height,
         mimeType: a.mimeType,
-        fileName: a.fileName,
+        fileName: a.fileName ?? undefined,
         key: `${a.uri}-${Date.now()}-${Math.random()}`,
       }));
       setImages((prev) => [...prev, ...picked]);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch (e) {
-      Alert.alert('Error', 'Failed to pick images.');
+      Alert.alert("Error", "Failed to pick images.");
     }
   }, []);
 
   const takePhoto = useCallback(async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please allow camera access to continue.');
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please allow camera access to continue."
+        );
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
@@ -90,13 +97,13 @@ export default function HomeScreen({ navigation }: Props) {
           width: a.width,
           height: a.height,
           mimeType: a.mimeType,
-          fileName: a.fileName,
+          fileName: a.fileName ?? undefined,
           key: `${a.uri}-${Date.now()}-${Math.random()}`,
         },
       ]);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch (e) {
-      Alert.alert('Error', 'Failed to take photo.');
+      Alert.alert("Error", "Failed to take photo.");
     }
   }, []);
 
@@ -104,47 +111,59 @@ export default function HomeScreen({ navigation }: Props) {
     setImages((prev) => prev.filter((i) => i.key !== key));
   }, []);
 
-  const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<Img>) => (
-    <MotiView 
-      from={{ opacity: 0, translateY: 12, scale: 0.95 }} 
-      animate={{ opacity: 1, translateY: 0, scale: 1 }}
-      transition={{ type: 'spring', damping: 15, stiffness: 150 }}
-    >
-      from={{ opacity: 0, translateY: 8 }} 
-      animate={{ opacity: 1, translateY: 0 }}
-      style={{ opacity: isActive ? 0.8 : 1 }}
-    >
-      <Pressable
-        onLongPress={drag}
-        className="bg-surfaceElevated rounded-4xl p-5 mb-4 flex-row items-center shadow-large border border-border-light"
-        style={{ opacity: isActive ? 0.7 : 1 }}
+  const renderItem = useCallback(
+    ({ item, drag, isActive }: RenderItemParams<Img>) => (
+      <MotiView
+        from={{ opacity: 0, translateY: 12, scale: 0.95 }}
+        animate={{ opacity: 1, translateY: 0, scale: 1 }}
+        transition={{ type: "spring", damping: 15, stiffness: 150 }}
+        style={{ opacity: isActive ? 0.8 : 1 }}
       >
-        <View className="relative">
-          <Image 
-            source={{ uri: item.uri }} 
-            style={{ width: 72, height: 72, borderRadius: 20, backgroundColor: '#F8FAFC' }} 
-          />
-          <View className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary-600 items-center justify-center shadow-medium">
-            <Ionicons name="image" size={14} color="#FFFFFF" />
-          </View>
-        </View>
-        <View className="ml-5 flex-1">
-          <Text className="text-text-primary text-lg" style={{ fontFamily: 'Inter_500Medium' }} numberOfLines={1}>
-            {item.fileName || item.uri.split('/').pop()}
-          </Text>
-          <Text className="text-text-tertiary mt-1 text-sm" style={{ fontFamily: 'Inter_400Regular' }}>
-            {item.width}×{item.height} pixels
-          </Text>
-        </View>
-        <Pressable 
-          onPress={() => removeAt(item.key)} 
-          className="w-11 h-11 rounded-2xl bg-error-50 items-center justify-center shadow-soft"
+        <Pressable
+          onLongPress={drag}
+          className="bg-surfaceElevated rounded-4xl p-5 mb-4 flex-row items-center shadow-large border border-border-light"
+          style={{ opacity: isActive ? 0.7 : 1 }}
         >
-          <Ionicons name="trash-outline" size={20} color="#DC2626" />
+          <View className="relative">
+            <Image
+              source={{ uri: item.uri }}
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 20,
+                backgroundColor: "#F8FAFC",
+              }}
+            />
+            <View className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary-600 items-center justify-center shadow-medium">
+              <Ionicons name="image" size={14} color="#FFFFFF" />
+            </View>
+          </View>
+          <View className="ml-5 flex-1">
+            <Text
+              className="text-text-primary text-lg"
+              style={{ fontFamily: "Inter_500Medium" }}
+              numberOfLines={1}
+            >
+              {item.fileName || item.uri.split("/").pop()}
+            </Text>
+            <Text
+              className="text-text-tertiary mt-1 text-sm"
+              style={{ fontFamily: "Inter_400Regular" }}
+            >
+              {item.width}×{item.height} pixels
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => removeAt(item.key)}
+            className="w-11 h-11 rounded-2xl bg-error-50 items-center justify-center shadow-soft"
+          >
+            <Ionicons name="trash-outline" size={20} color="#DC2626" />
+          </Pressable>
         </Pressable>
-      </Pressable>
-    </MotiView>
-  ), [removeAt]);
+      </MotiView>
+    ),
+    [removeAt]
+  );
 
   const goEdit = useCallback(() => {
     if (!images.length) {

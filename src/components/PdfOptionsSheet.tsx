@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, Pressable } from 'react-native';
 import { FitMode, PaperPreset, Orientation } from '../utils/pdfUtils';
+import PrimaryButton from "./PrimaryButton";
 
 type Props = {
   visible: boolean;

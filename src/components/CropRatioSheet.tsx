@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, Pressable } from 'react-native';
+import PrimaryButton from "./PrimaryButton";
 
 type RatioKey = '1:1' | '4:3' | '3:2' | 'A4 Portrait' | 'A4 Landscape';
 
