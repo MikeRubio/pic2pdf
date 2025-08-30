@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import PdfOptionsSheet from '../components/PdfOptionsSheet';
 import * as ImageManipulator from 'expo-image-manipulator';
 import CropRatioSheet from '../components/CropRatioSheet';
+import ImageAdjustmentsSheet, { ImageAdjustments } from '../components/ImageAdjustmentsSheet';
+import { applyImageAdjustments, hasAdjustments } from '../utils/imageAdjustments';
 import { MotiView } from 'moti';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Edit'>;
@@ -33,11 +35,42 @@ export default function EditScreen({ route, navigation }: Props) {
   });
   const [cropVisible, setCropVisible] = useState(false);
   const [editorKey, setEditorKey] = useState<string | null>(null);
+  const [adjustmentsVisible, setAdjustmentsVisible] = useState(false);
+  const [imageAdjustments, setImageAdjustments] = useState<Record<string, ImageAdjustments>>({});
   const ad = useAdManager();
 
   const removeAt = useCallback((key: string) => {
     setItems((prev) => prev.filter((i) => i.key !== key));
+    // Clean up adjustments for removed item
+    setImageAdjustments(prev => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  const applyAdjustments = useCallback(async (key: string, adjustments: ImageAdjustments) => {
+    try {
+      const item = items.find(i => i.key === key);
+      if (!item) return;
+
+      if (!hasAdjustments(adjustments)) {
+        // No adjustments to apply, just update state
+        setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
+        return;
+      }
   }, []);
+      const adjustedUri = await applyImageAdjustments(item.uri, adjustments);
+      
+      // Update the item with the new URI
+      setItems(prev => prev.map(i => 
+        i.key === key ? { ...i, uri: adjustedUri } : i
+      ));
+      
+      // Store the adjustments
+      setImageAdjustments(prev => ({ ...prev, [key]: adjustments }));
+    } catch (error) {
+      Alert.alert('Adjustment failed', 'Could not apply image adjustments.');
+    }
+  }, [items]);
 
   const renderItem = useCallback(({ item, drag, isActive }: RenderItemParams<any>) => (
     <MotiView 
@@ -85,6 +118,23 @@ export default function EditScreen({ route, navigation }: Props) {
             className="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center shadow-soft"
           >
             <Ionicons name="create-outline" size={18} color="#475569" />
+          </Pressable>
+          <Pressable 
+            onPress={() => { 
+              setEditorKey(item.key); 
+              setAdjustmentsVisible(true); 
+            }} 
+            className={`w-11 h-11 rounded-2xl items-center justify-center shadow-soft ${
+              hasAdjustments(imageAdjustments[item.key] || { brightness: 0, contrast: 0, saturation: 0 })
+                ? 'bg-accent-100' 
+                : 'bg-slate-100'
+            }`}
+          >
+            <Ionicons 
+              name="color-filter-outline" 
+              size={18} 
+              color={hasAdjustments(imageAdjustments[item.key] || { brightness: 0, contrast: 0, saturation: 0 }) ? "#10B981" : "#475569"} 
+            />
           </Pressable>
           <Pressable 
             onPress={() => { setEditorKey(item.key); setCropVisible(true); }} 
@@ -240,6 +290,16 @@ export default function EditScreen({ route, navigation }: Props) {
           if (!it) return;
           navigation.navigate('CropEditor', { uri: it.uri, imageWidth: it.width, imageHeight: it.height, aspect: ratio, onComplete: (res) => { setItems(prev => prev.map(x => x.key === editorKey ? { ...x, uri: res.uri, width: res.width, height: res.height } : x)); } });
         }}
+      />
+      <ImageAdjustmentsSheet
+        visible={adjustmentsVisible}
+        onClose={() => setAdjustmentsVisible(false)}
+        onApply={(adjustments) => {
+          if (editorKey) {
+            applyAdjustments(editorKey, adjustments);
+          }
+        }}
+        initialValues={editorKey ? imageAdjustments[editorKey] : undefined}
       />
     </View>
   );
