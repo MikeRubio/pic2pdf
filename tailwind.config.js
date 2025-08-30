@@ -8,16 +8,17 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: "#EFF6FF",
-          100: "#DBEAFE", 
-          200: "#BFDBFE",
-          300: "#93C5FD",
-          400: "#60A5FA",
-          500: "#3B82F6",
-          600: "#2563EB",
-          700: "#1D4ED8",
-          800: "#1E40AF",
-          900: "#1E3A8A"
+          50: "#F0F9FF",
+          100: "#E0F2FE", 
+          200: "#BAE6FD",
+          300: "#7DD3FC",
+          400: "#38BDF8",
+          500: "#0EA5E9",
+          600: "#0284C7",
+          700: "#0369A1",
+          800: "#075985",
+          900: "#0C4A6E",
+          950: "#082F49"
         },
         accent: {
           50: "#ECFDF5",
@@ -29,7 +30,8 @@ module.exports = {
           600: "#059669",
           700: "#047857",
           800: "#065F46",
-          900: "#064E3B"
+          900: "#064E3B",
+          950: "#022C22"
         },
         neutral: {
           50: "#FAFAFA",
@@ -41,14 +43,30 @@ module.exports = {
           600: "#525252",
           700: "#404040",
           800: "#262626",
-          900: "#171717"
+          900: "#171717",
+          950: "#0A0A0A"
+        },
+        slate: {
+          50: "#F8FAFC",
+          100: "#F1F5F9",
+          200: "#E2E8F0",
+          300: "#CBD5E1",
+          400: "#94A3B8",
+          500: "#64748B",
+          600: "#475569",
+          700: "#334155",
+          800: "#1E293B",
+          900: "#0F172A",
+          950: "#020617"
         },
         background: "#FAFBFC",
         surface: "#FFFFFF",
+        surfaceElevated: "#FDFDFD",
         text: {
           primary: "#0F172A",
           secondary: "#475569",
-          tertiary: "#94A3B8"
+          tertiary: "#94A3B8",
+          inverse: "#FFFFFF"
         },
         border: {
           light: "#F1F5F9",
@@ -57,16 +75,22 @@ module.exports = {
         },
         error: {
           50: "#FEF2F2",
+          100: "#FEE2E2",
           500: "#EF4444",
-          600: "#DC2626"
+          600: "#DC2626",
+          700: "#B91C1C"
         },
         warning: {
           50: "#FFFBEB",
-          500: "#F59E0B"
+          100: "#FEF3C7",
+          500: "#F59E0B",
+          600: "#D97706"
         },
         success: {
           50: "#F0FDF4",
-          500: "#22C55E"
+          100: "#DCFCE7",
+          500: "#22C55E",
+          600: "#16A34A"
         }
       },
       fontFamily: {
@@ -75,16 +99,30 @@ module.exports = {
       borderRadius: {
         'xl': '0.75rem',
         '2xl': '1rem',
-        '3xl': '1.5rem'
+        '3xl': '1.5rem',
+        '4xl': '2rem'
       },
       boxShadow: {
-        soft: "0 1px 3px rgba(0,0,0,0.08)",
-        medium: "0 4px 6px rgba(0,0,0,0.07)",
-        large: "0 10px 15px rgba(0,0,0,0.1)"
+        soft: "0 1px 3px rgba(15, 23, 42, 0.08)",
+        medium: "0 4px 12px rgba(15, 23, 42, 0.1)",
+        large: "0 8px 25px rgba(15, 23, 42, 0.15)",
+        xl: "0 20px 25px rgba(15, 23, 42, 0.1)"
       },
       spacing: {
         '18': '4.5rem',
         '88': '22rem'
+      },
+      fontSize: {
+        '2xs': '0.625rem',
+        'xs': '0.75rem',
+        'sm': '0.875rem',
+        'base': '1rem',
+        'lg': '1.125rem',
+        'xl': '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+        '5xl': '3rem'
       }
     }
   },

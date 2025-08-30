@@ -44,32 +44,32 @@ export default function OnboardingScreen({ onDone }: Props) {
           setIndex(i);
         }}
         renderItem={({ item }) => (
-          <View style={{ width }} className="px-8 pt-24 items-center">
+          <View style={{ width }} className="px-8 pt-20 items-center">
             <MotiView
-              from={{ opacity: 0, scale: 0.8 }}
+              from={{ opacity: 0, scale: 0.7, translateY: 20 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'timing', duration: 350 }}
-              className="w-24 h-24 rounded-3xl bg-primary-600 items-center justify-center shadow-large"
+              transition={{ type: 'spring', damping: 15, stiffness: 150, delay: 100 }}
+              className="w-32 h-32 rounded-4xl bg-primary-600 items-center justify-center shadow-xl mb-8"
             >
-              <Ionicons name={item.icon} size={40} color="#fff" />
+              <Ionicons name={item.icon} size={48} color="#fff" />
             </MotiView>
-            <Text className="text-3xl text-text-primary mt-8 text-center" style={{ fontFamily: 'Inter_700Bold' }}>
+            <Text className="text-4xl text-text-primary text-center mb-4" style={{ fontFamily: 'Inter_700Bold' }}>
               {item.title}
             </Text>
-            <Text className="text-text-secondary mt-3 text-center text-lg leading-6 px-4" style={{ fontFamily: 'Inter_400Regular' }}>
+            <Text className="text-text-secondary text-center text-xl leading-8 px-6" style={{ fontFamily: 'Inter_400Regular' }}>
               {item.subtitle}
             </Text>
           </View>
         )}
       />
 
-      <View className="px-8 pb-16">
-        <View className="flex-row justify-center mb-8">
+      <View className="px-8 pb-20">
+        <View className="flex-row justify-center mb-10">
           {slides.map((_, i) => (
             <View 
               key={i} 
-              className={`h-2 rounded-full mx-1 transition-all duration-300 ${
-                i === index ? 'bg-primary-600 w-8' : 'bg-neutral-300 w-2'
+              className={`h-3 rounded-full mx-1.5 transition-all duration-300 ${
+                i === index ? 'bg-primary-600 w-10' : 'bg-slate-300 w-3'
               }`} 
             />
           ))}
@@ -77,7 +77,8 @@ export default function OnboardingScreen({ onDone }: Props) {
         <PrimaryButton 
           title={index === slides.length - 1 ? 'Get Started' : 'Next'} 
           onPress={next} 
-          size="lg"
+          size="xl"
+          fullWidth
           icon={index === slides.length - 1 ? 'checkmark' : 'arrow-forward'}
         />
       </View>

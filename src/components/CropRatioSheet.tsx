@@ -20,26 +20,28 @@ const ratios: Array<{ key: RatioKey; ratio: number }> = [
 export default function CropRatioSheet({ visible, onClose, onSelect }: CropRatioSheetProps) {
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/50">
-        <View className="bg-surface rounded-t-3xl p-6 shadow-large">
-          <View className="w-12 h-1 bg-neutral-300 rounded-full self-center mb-6" />
-          <Text className="text-text-primary text-xl mb-6" style={{ fontFamily: 'Inter_700Bold' }}>Choose Crop Ratio</Text>
-          <View className="flex-row flex-wrap">
+      <View className="flex-1 justify-end bg-black/60">
+        <View className="bg-surface rounded-t-4xl p-8 shadow-xl border-t border-border-light">
+          <View className="w-16 h-1.5 bg-slate-300 rounded-full self-center mb-8" />
+          <Text className="text-text-primary text-2xl mb-8" style={{ fontFamily: 'Inter_700Bold' }}>Choose Crop Ratio</Text>
+          <View className="flex-row flex-wrap mb-6">
             {ratios.map((r) => (
               <Pressable 
                 key={r.key} 
                 onPress={() => onSelect(r.key, r.ratio)} 
-                className="px-4 py-3 rounded-2xl bg-surface border border-border mr-3 mb-3"
+                className="px-5 py-4 rounded-2xl bg-surfaceElevated border border-border mr-3 mb-3 shadow-soft"
               >
-                <Text className="text-text-primary" style={{ fontFamily: 'Inter_500Medium' }}>{r.key}</Text>
+                <Text className="text-text-primary text-base" style={{ fontFamily: 'Inter_500Medium' }}>{r.key}</Text>
               </Pressable>
             ))}
           </View>
-          <View className="flex-row mt-6">
-            <Pressable onPress={onClose} className="flex-1 bg-neutral-800 rounded-2xl py-4 items-center shadow-medium">
-              <Text className="text-white text-lg" style={{ fontFamily: 'Inter_700Bold' }}>Cancel</Text>
-            </Pressable>
-          </View>
+          <PrimaryButton 
+            title="Cancel" 
+            onPress={onClose} 
+            variant="secondary" 
+            size="xl"
+            fullWidth
+          />
         </View>
       </View>
     </Modal>

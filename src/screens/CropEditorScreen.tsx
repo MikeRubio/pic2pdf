@@ -100,10 +100,10 @@ export default function CropEditorScreen({ route, navigation }: Props) {
 
   return (
     <View className="flex-1 bg-background">
-      <View style={{ padding: padding + 2, paddingTop: 32 }}>
-        <Text className="text-2xl text-text-primary mb-3" style={{ fontFamily: 'Inter_700Bold' }}>Adjust Crop Area</Text>
-        <Text className="text-text-secondary mb-6" style={{ fontFamily: 'Inter_400Regular' }}>
-          Pinch to zoom, drag to reposition
+      <View style={{ padding: padding + 4, paddingTop: 24 }}>
+        <Text className="text-3xl text-text-primary mb-4" style={{ fontFamily: 'Inter_700Bold' }}>Adjust Crop Area</Text>
+        <Text className="text-text-secondary text-lg mb-8 leading-7" style={{ fontFamily: 'Inter_400Regular' }}>
+          Pinch to zoom and drag to reposition your image within the crop area
         </Text>
         <View 
           style={{ 
@@ -111,27 +111,27 @@ export default function CropEditorScreen({ route, navigation }: Props) {
             height: cropH, 
             alignSelf: 'center', 
             backgroundColor: '#000', 
-            borderRadius: 24, 
+            borderRadius: 32, 
             overflow: 'hidden',
             shadowColor: '#000',
-            shadowOpacity: 0.15,
-            shadowRadius: 8,
-            elevation: 8
+            shadowOpacity: 0.25,
+            shadowRadius: 12,
+            elevation: 12
           }}
         >
           <GestureDetector gesture={composed}>
             <Animated.Image source={{ uri }} resizeMode="cover" style={[{ alignSelf: 'center' }, imgStyle]} />
           </GestureDetector>
           {/* Overlay grid */}
-          <View pointerEvents="none" style={{ position: 'absolute', inset: 0, borderWidth: 3, borderColor: 'rgba(255,255,255,0.95)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: cropH/3, right: 0, height: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: (cropH/3)*2, right: 0, height: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: cropW/3, bottom: 0, width: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (cropW/3)*2, bottom: 0, width: 0.5, backgroundColor: 'rgba(255,255,255,0.4)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', inset: 0, borderWidth: 4, borderColor: 'rgba(255,255,255,0.9)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: cropH/3, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.6)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: (cropH/3)*2, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.6)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: cropW/3, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.6)' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (cropW/3)*2, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.6)' }} />
         </View>
       </View>
-      <View className="px-6 mt-8">
-        <View className="flex-row space-x-3">
+      <View className="px-6 mt-10">
+        <View className="flex-row space-x-4">
           <PrimaryButton 
             title="Reset" 
             variant="secondary" 
@@ -140,14 +140,16 @@ export default function CropEditorScreen({ route, navigation }: Props) {
               tx.value = withTiming(0); 
               ty.value = withTiming(0); 
             }} 
-            size="lg"
+            size="xl"
+            fullWidth
             style={{ flex: 1 }} 
           />
           <PrimaryButton 
             title="Apply Crop" 
             icon="checkmark"
             onPress={doSave} 
-            size="lg"
+            size="xl"
+            fullWidth
             style={{ flex: 1 }} 
           />
         </View>

@@ -30,8 +30,12 @@ export default function BannerAd({ adUnitId }: Props) {
       bottom: 0, 
       paddingBottom: insets.bottom, 
       backgroundColor: '#FAFBFC',
-      borderTopWidth: 1,
-      borderTopColor: '#F1F5F9'
+      borderTopWidth: 1.5,
+      borderTopColor: '#E2E8F0',
+      shadowColor: '#0F172A',
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      elevation: 8
     }}>
       <AdComponent bannerSize="smartBannerPortrait" adUnitID={adUnitId} servePersonalizedAds onDidFailToReceiveAdWithError={() => {}} />
     </View>

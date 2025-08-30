@@ -81,7 +81,13 @@ export default function App() {
 
   const theme = {
     ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: '#FAFBFC', text: '#0F172A' },
+    colors: { 
+      ...DefaultTheme.colors, 
+      background: '#FAFBFC', 
+      text: '#0F172A',
+      card: '#FFFFFF',
+      border: '#E2E8F0'
+    },
   };
 
   return (
@@ -103,19 +109,20 @@ export default function App() {
                 headerTitleStyle: { 
                   fontFamily: 'Inter_700Bold', 
                   color: '#0F172A',
-                  fontSize: 18
+                  fontSize: 20
                 },
                 headerStyle: {
                   backgroundColor: '#FAFBFC',
                   shadowColor: 'transparent',
                   elevation: 0,
+                  borderBottomWidth: 0,
                 },
                 headerRight: () => (
                   <Pressable 
                     onPress={() => navigation.navigate('Settings')} 
-                    className="w-10 h-10 rounded-xl bg-neutral-100 items-center justify-center"
+                    className="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center shadow-soft"
                   >
-                    <Ionicons name="settings-outline" size={20} color="#0F172A" />
+                    <Ionicons name="settings-outline" size={22} color="#475569" />
                   </Pressable>
                 ),
               })}
@@ -128,12 +135,13 @@ export default function App() {
                 headerTitleStyle: { 
                   fontFamily: 'Inter_700Bold',
                   color: '#0F172A',
-                  fontSize: 18
+                  fontSize: 20
                 },
                 headerStyle: {
                   backgroundColor: '#FAFBFC',
                   shadowColor: 'transparent',
                   elevation: 0,
+                  borderBottomWidth: 0,
                 }
               }}
             />
@@ -145,12 +153,13 @@ export default function App() {
                 headerTitleStyle: { 
                   fontFamily: 'Inter_700Bold',
                   color: '#0F172A',
-                  fontSize: 18
+                  fontSize: 20
                 },
                 headerStyle: {
                   backgroundColor: '#FAFBFC',
                   shadowColor: 'transparent',
                   elevation: 0,
+                  borderBottomWidth: 0,
                 }
               }}
             />
@@ -162,12 +171,13 @@ export default function App() {
                 headerTitleStyle: { 
                   fontFamily: 'Inter_700Bold',
                   color: '#0F172A',
-                  fontSize: 18
+                  fontSize: 20
                 },
                 headerStyle: {
                   backgroundColor: '#FAFBFC',
                   shadowColor: 'transparent',
                   elevation: 0,
+                  borderBottomWidth: 0,
                 }
               }}
             />
@@ -179,12 +189,13 @@ export default function App() {
                 headerTitleStyle: { 
                   fontFamily: 'Inter_700Bold',
                   color: '#0F172A',
-                  fontSize: 18
+                  fontSize: 20
                 },
                 headerStyle: {
                   backgroundColor: '#FAFBFC',
                   shadowColor: 'transparent',
                   elevation: 0,
+                  borderBottomWidth: 0,
                 }
               }}
             />
